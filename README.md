@@ -1,11 +1,12 @@
 <h1 align="center">Claude Skills</h1>
 <p align="center">
-  Claude Code를 위한 커스텀 스킬 컬렉션
+  Claude Code를 위한 커스텀 스킬 & 에이전트 컬렉션
 </p>
 
 <p align="center">
   <a href="LICENSE"><img src="https://img.shields.io/badge/license-MIT-blue.svg" alt="MIT License"></a>
   <a href="#스킬-목록"><img src="https://img.shields.io/badge/skills-2-brightgreen.svg" alt="Skills"></a>
+  <a href="#에이전트-목록"><img src="https://img.shields.io/badge/agents-coming_soon-yellow.svg" alt="Agents"></a>
   <a href="https://github.com/Tianea2160/claude-skills/pulls"><img src="https://img.shields.io/badge/PRs-welcome-brightgreen.svg" alt="PRs Welcome"></a>
 </p>
 
@@ -13,7 +14,7 @@
 
 ## 소개
 
-**Claude Skills**는 [Claude Code](https://docs.anthropic.com/en/docs/claude-code)의 반복 작업을 자동화하는 스킬 모음이다. 각 스킬은 검증된 워크플로우를 캡슐화하여, 슬래시 명령어 하나로 복잡한 작업을 체계적으로 수행한다.
+**Claude Skills**는 [Claude Code](https://docs.anthropic.com/en/docs/claude-code)의 반복 작업을 자동화하는 스킬과 에이전트 모음이다. 각 스킬은 검증된 워크플로우를 캡슐화하여, 슬래시 명령어 하나로 복잡한 작업을 체계적으로 수행한다. 에이전트는 특정 도메인에 특화된 서브에이전트를 정의하여, Claude가 적절한 시점에 자동으로 위임한다.
 
 > 전문가의 워크플로우를 스킬로 패키징하면, 누구나 전문가 수준의 결과를 얻을 수 있다.
 
@@ -23,8 +24,12 @@
 
 | 스킬 | 설명 | 사용법 |
 |------|------|--------|
-| [claude-md-writer](claude-md-writer/SKILL.md) | CLAUDE.md 작성/리팩토링 및 `.claude/rules/` 관리 | `/claude-md-writer [create\|refactor\|rules]` |
-| [new-feature](new-feature/SKILL.md) | 리서치 → 작업 → 검토 → 보고 4단계 기능 개발 워크플로우 | `/new-feature <기능 설명>` |
+| [claude-md-writer](skills/claude-md-writer/SKILL.md) | CLAUDE.md 작성/리팩토링 및 `.claude/rules/` 관리 | `/claude-md-writer [create\|refactor\|rules]` |
+| [new-feature](skills/new-feature/SKILL.md) | 리서치 → 작업 → 검토 → 보고 4단계 기능 개발 워크플로우 | `/new-feature <기능 설명>` |
+
+## 에이전트 목록
+
+> 에이전트는 준비 중입니다. 곧 추가될 예정입니다.
 
 ## 빠른 시작
 
@@ -34,16 +39,28 @@
 git clone https://github.com/Tianea2160/claude-skills.git
 ```
 
-### 2. 스킬 설치
+### 2. 설치
 
-원하는 스킬 디렉토리를 프로젝트의 `.claude/skills/` 경로에 복사한다.
+이 저장소는 `.claude/` 디렉토리 구조를 그대로 따르므로, 원하는 항목을 프로젝트의 `.claude/` 경로에 복사하면 된다.
 
 ```bash
-# 예: claude-md-writer 스킬 설치
-cp -r claude-skills/claude-md-writer /your-project/.claude/skills/
+# 스킬 설치
+cp -r claude-skills/skills/claude-md-writer /your-project/.claude/skills/
+cp -r claude-skills/skills/new-feature /your-project/.claude/skills/
 
-# 예: new-feature 스킬 설치
-cp -r claude-skills/new-feature /your-project/.claude/skills/
+# 에이전트 설치 (추후 추가 시)
+cp -r claude-skills/agents/<agent-name>.md /your-project/.claude/agents/
+```
+
+개인 전역 설치 (모든 프로젝트에서 사용):
+
+```bash
+# 스킬 전역 설치
+cp -r claude-skills/skills/claude-md-writer ~/.claude/skills/
+cp -r claude-skills/skills/new-feature ~/.claude/skills/
+
+# 에이전트 전역 설치 (추후 추가 시)
+cp -r claude-skills/agents/<agent-name>.md ~/.claude/agents/
 ```
 
 ### 3. 사용
@@ -91,7 +108,7 @@ Discovery → Analysis → Interview → Generate/Refactor → Validate
 - 모든 명령어는 **copy-paste 실행 가능**
 - **프로젝트 고유 정보만** 작성
 
-자세한 내용은 [SKILL.md](claude-md-writer/SKILL.md)를 참고한다.
+자세한 내용은 [SKILL.md](skills/claude-md-writer/SKILL.md)를 참고한다.
 
 </details>
 
@@ -117,34 +134,44 @@ Discovery → Analysis → Interview → Generate/Refactor → Validate
 4. 결과물을 전수 검토하고 문제를 수정한다
 5. 구조화된 보고서로 결과를 전달한다
 
-자세한 내용은 [SKILL.md](new-feature/SKILL.md)를 참고한다.
+자세한 내용은 [SKILL.md](skills/new-feature/SKILL.md)를 참고한다.
 
 </details>
 
 ## 프로젝트 구조
 
+이 저장소는 `.claude/` 디렉토리 구조를 그대로 따른다.
+
 ```
 claude-skills/
-├── README.md
-├── LICENSE
+├── skills/                         # 스킬 (.claude/skills/ 대응)
+│   ├── claude-md-writer/
+│   │   ├── SKILL.md                # 스킬 정의
+│   │   └── references/
+│   │       ├── best-practices.md   # CLAUDE.md 작성 best practice
+│   │       └── section-guide.md    # 섹션별 작성 가이드
+│   └── new-feature/
+│       ├── SKILL.md                # 스킬 정의
+│       └── references/
+│           ├── examples.md         # 작업 분해 및 병렬 실행 예시
+│           ├── review-checklist.md # 코드 품질 검증 체크리스트
+│           └── templates.md        # 리서치/보고 형식 템플릿
+├── agents/                         # 에이전트 (.claude/agents/ 대응)
+│   └── .gitkeep
 ├── docs/
-│   └── design-philosophy.md    # 설계 철학 및 근거
-├── claude-md-writer/
-│   ├── SKILL.md                # 스킬 정의
-│   └── references/
-│       ├── best-practices.md   # CLAUDE.md 작성 best practice
-│       └── section-guide.md    # 섹션별 작성 가이드
-└── new-feature/
-    └── SKILL.md                # 스킬 정의
+│   └── design-philosophy.md        # 설계 철학 및 근거
+├── README.md
+└── LICENSE
 ```
 
-## 나만의 스킬 만들기
+## 나만의 확장 만들기
 
-새로운 스킬을 추가하려면 다음 구조를 따른다:
+### 스킬 만들기
 
 ```
 your-skill/
-└── SKILL.md    # 스킬 정의 (필수)
+├── SKILL.md    # 스킬 정의 (필수)
+└── references/ # 참조 문서 (선택)
 ```
 
 **SKILL.md** 필수 frontmatter:
@@ -158,7 +185,24 @@ allowed-tools: Read, Write, Edit, Glob, Grep, Bash
 ---
 ```
 
-자세한 작성법은 [Claude Code Skills 공식 문서](https://docs.anthropic.com/en/docs/claude-code/skills)를 참고한다.
+자세한 작성법은 [Claude Code Skills 공식 문서](https://code.claude.com/docs/en/slash-commands)를 참고한다.
+
+### 에이전트 만들기
+
+에이전트는 마크다운 파일 하나로 정의한다:
+
+```yaml
+---
+name: my-agent
+description: "에이전트 설명"
+model: sonnet
+tools: Read, Grep, Glob
+---
+
+에이전트의 시스템 프롬프트를 여기에 작성한다.
+```
+
+자세한 작성법은 [Claude Code Subagents 공식 문서](https://code.claude.com/docs/en/sub-agents)를 참고한다.
 
 ## 기여하기
 
@@ -175,6 +219,7 @@ allowed-tools: Read, Write, Edit, Glob, Grep, Bash
 - 스킬은 한 가지 목적에 집중한다
 - SKILL.md에 워크플로우를 명확히 문서화한다
 - 기존 스킬의 패턴과 일관성을 유지한다
+- `skills/` 또는 `agents/` 하위에 올바른 위치에 추가한다
 
 ## 라이선스
 
