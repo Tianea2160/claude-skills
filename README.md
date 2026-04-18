@@ -5,8 +5,8 @@
 
 <p align="center">
   <a href="LICENSE"><img src="https://img.shields.io/badge/license-MIT-blue.svg" alt="MIT License"></a>
-  <a href="#스킬-목록"><img src="https://img.shields.io/badge/skills-2-brightgreen.svg" alt="Skills"></a>
-  <a href="#에이전트-목록"><img src="https://img.shields.io/badge/agents-coming_soon-yellow.svg" alt="Agents"></a>
+  <a href="#스킬-목록"><img src="https://img.shields.io/badge/skills-6-brightgreen.svg" alt="Skills"></a>
+  <a href="#에이전트-목록"><img src="https://img.shields.io/badge/agents-2-brightgreen.svg" alt="Agents"></a>
   <a href="https://github.com/Tianea2160/claude-skills/pulls"><img src="https://img.shields.io/badge/PRs-welcome-brightgreen.svg" alt="PRs Welcome"></a>
 </p>
 
@@ -25,11 +25,20 @@
 | 스킬 | 설명 | 사용법 |
 |------|------|--------|
 | [claude-md-writer](skills/claude-md-writer/SKILL.md) | CLAUDE.md 작성/리팩토링 및 `.claude/rules/` 관리 | `/claude-md-writer [create\|refactor\|rules]` |
-| [new-feature](skills/new-feature/SKILL.md) | 리서치 → 작업 → 검토 → 보고 4단계 기능 개발 워크플로우 | `/new-feature <기능 설명>` |
+| [new-feature](skills/new-feature/SKILL.md) | 4개 feature-* 스킬을 순차 호출하는 **래퍼**. 전체 워크플로우 + 최종 개조식 보고 | `/new-feature <기능 설명>` |
+| [feature-research](skills/feature-research/SKILL.md) | 리서치 단계. 코드베이스 병렬 탐색 + 외부 조사 → 승인된 Plan 파일 생성 | `/feature-research <기능 설명> [--plan <경로>]` |
+| [feature-work](skills/feature-work/SKILL.md) | 구현 단계. Plan을 TaskCreate로 분해 → 병렬 에이전트 실행 → 테스트/simplify | `/feature-work <plan-path>` |
+| [feature-test](skills/feature-test/SKILL.md) | 테스트 작성 단계. 시나리오 도출 → 파일별 에이전트로 테스트 작성/실행 + 자가 치유 | `/feature-test <plan-path>` |
+| [feature-review](skills/feature-review/SKILL.md) | 검증 단계. 목표 정합성 + 코드 품질 병렬 검증 → 루프 → CLAUDE.md 반영 | `/feature-review <plan-path>` |
 
 ## 에이전트 목록
 
-> 에이전트는 준비 중입니다. 곧 추가될 예정입니다.
+| 에이전트 | 모델 | 역할 |
+|----------|------|------|
+| [external-research](agents/external-research.md) | sonnet | 외부(웹) 조사 전용. WebSearch/WebFetch로 업계 사례·공식 문서·알려진 함정을 **출처 포함** 수집 |
+| [code-implementer](agents/code-implementer.md) | sonnet | 코드 작업 전담 실행자. Plan 기반 task 단위 편집 + 스코프 테스트 + 2회 자가 치유, 경로·심볼 수준 요약만 반환 |
+
+두 에이전트 모두 `feature-*` 스킬이 위임 대상으로 호출한다. `code-implementer`는 `feature-work`의 구현, `feature-test`의 테스트 작성, `feature-review`의 자가 치유 단계에서 사용된다.
 
 ## 빠른 시작
 
@@ -44,23 +53,21 @@ git clone https://github.com/Tianea2160/claude-skills.git
 이 저장소는 `.claude/` 디렉토리 구조를 그대로 따르므로, 원하는 항목을 프로젝트의 `.claude/` 경로에 복사하면 된다.
 
 ```bash
-# 스킬 설치
-cp -r claude-skills/skills/claude-md-writer /your-project/.claude/skills/
-cp -r claude-skills/skills/new-feature /your-project/.claude/skills/
+# 스킬 전체 설치
+cp -r claude-skills/skills/* /your-project/.claude/skills/
 
-# 에이전트 설치 (추후 추가 시)
-cp -r claude-skills/agents/<agent-name>.md /your-project/.claude/agents/
+# 에이전트 설치
+cp -r claude-skills/agents/*.md /your-project/.claude/agents/
 ```
 
 개인 전역 설치 (모든 프로젝트에서 사용):
 
 ```bash
 # 스킬 전역 설치
-cp -r claude-skills/skills/claude-md-writer ~/.claude/skills/
-cp -r claude-skills/skills/new-feature ~/.claude/skills/
+cp -r claude-skills/skills/* ~/.claude/skills/
 
-# 에이전트 전역 설치 (추후 추가 시)
-cp -r claude-skills/agents/<agent-name>.md ~/.claude/agents/
+# 에이전트 전역 설치
+cp -r claude-skills/agents/*.md ~/.claude/agents/
 ```
 
 ### 3. 사용
@@ -113,28 +120,32 @@ Discovery → Analysis → Interview → Generate/Refactor → Validate
 </details>
 
 <details>
-<summary><b>new-feature</b> — 체계적 기능 개발 워크플로우</summary>
+<summary><b>new-feature</b> + <b>feature-*</b> — 4단계 분리형 기능 개발 워크플로우</summary>
 
-### 핵심 기능
+### 구성
 
-- **리서치**: 요구사항 수집, 코드베이스 분석, 외부 best practice 조사
-- **작업**: Task 기반으로 분해하여 순차 실행
-- **검토**: 요구사항 정합성, 엣지 케이스, 보안 취약점 전수 검토
-- **보고**: 구현 내용, 변경 파일, 검증 결과를 구조화된 형식으로 보고
+- **`/new-feature` (래퍼)** — 아래 4개 스킬을 순차 호출하고 최종 **개조식 종합 보고**를 출력
+- **`/feature-research`** — 코드베이스 병렬 탐색 + external-research → 승인된 Plan 파일 작성
+- **`/feature-work`** — Plan의 `## Task Order`를 TaskCreate로 분해 → 파일 겹침 없는 태스크를 **병렬 에이전트**로 실행 → 테스트 + `/simplify`
+- **`/feature-test`** — Plan 기반 테스트 시나리오 도출 → 파일별 에이전트 위임으로 테스트 작성/실행 → 2회 한도 자가 치유
+- **`/feature-review`** — 목표 정합성 + 코드 품질 **2개 에이전트 병렬** 검증 → delta-only 재검증 → CLAUDE.md 반영
 
 ### 워크플로우
 
 ```
-리서치 → [승인 게이트] → 작업 → 검토 → 보고
+feature-research → [승인 게이트] → feature-work → feature-test → feature-review
+                                                                     ↓
+                                                 new-feature 래퍼가 최종 보고
 ```
 
-1. 요구사항을 명확히 하고 코드베이스를 분석한다
-2. 접근 방식을 제안하고 **사용자 승인을 받은 후** 진행한다
-3. TaskCreate로 작업을 분해하고 순차적으로 구현한다
-4. 결과물을 전수 검토하고 문제를 수정한다
-5. 구조화된 보고서로 결과를 전달한다
+### 설계 원칙
 
-자세한 내용은 [SKILL.md](skills/new-feature/SKILL.md)를 참고한다.
+- **Plan 파일 계약**: `.claude/plans/<slug>.md`를 4개 스킬이 공유. 본문은 경로로만 전달
+- **Agent 격리**: 모든 위임 프롬프트에 고정 반환 스키마를 강제해 main context에 요약만 수렴
+- **개조식 보고**: 모든 mini-보고와 래퍼 종합 보고가 outline 형식(명사구/동사구, 2단 bullet, `✓ ⚠ ✗ ▸` 심볼) 통일
+- **작성 언어**: 스킬 본문은 영어, 런타임 출력은 프로젝트 언어 설정 준수
+
+자세한 내용은 각 SKILL.md를 참고한다.
 
 </details>
 
@@ -144,22 +155,42 @@ Discovery → Analysis → Interview → Generate/Refactor → Validate
 
 ```
 claude-skills/
-├── skills/                         # 스킬 (.claude/skills/ 대응)
+├── skills/                             # 스킬 (.claude/skills/ 대응)
 │   ├── claude-md-writer/
-│   │   ├── SKILL.md                # 스킬 정의
+│   │   ├── SKILL.md
 │   │   └── references/
-│   │       ├── best-practices.md   # CLAUDE.md 작성 best practice
-│   │       └── section-guide.md    # 섹션별 작성 가이드
-│   └── new-feature/
-│       ├── SKILL.md                # 스킬 정의
+│   │       ├── best-practices.md
+│   │       └── section-guide.md
+│   ├── new-feature/                    # 래퍼 스킬
+│   │   ├── SKILL.md
+│   │   └── references/
+│   │       └── report-template.md      # 개조식 최종 보고 템플릿
+│   ├── feature-research/
+│   │   ├── SKILL.md
+│   │   ├── references/
+│   │   │   ├── plan-schema.md          # Plan 파일 공유 계약
+│   │   │   └── plan-template.md
+│   │   └── examples/
+│   │       └── good-plan.md
+│   ├── feature-work/
+│   │   ├── SKILL.md
+│   │   └── references/
+│   │       └── task-breakdown.md
+│   ├── feature-test/
+│   │   ├── SKILL.md
+│   │   └── references/
+│   │       └── test-patterns.md
+│   └── feature-review/
+│       ├── SKILL.md
 │       └── references/
-│           ├── examples.md         # 작업 분해 및 병렬 실행 예시
-│           ├── review-checklist.md # 코드 품질 검증 체크리스트
-│           └── templates.md        # 리서치/보고 형식 템플릿
-├── agents/                         # 에이전트 (.claude/agents/ 대응)
-│   └── .gitkeep
+│           └── review-checklist.md
+├── agents/                             # 에이전트 (.claude/agents/ 대응)
+│   ├── external-research.md
+│   └── code-implementer.md
 ├── docs/
-│   └── design-philosophy.md        # 설계 철학 및 근거
+│   └── design-philosophy.md
+├── .claude/rules/                      # path-scoped 규칙
+│   └── skill-authoring.md
 ├── README.md
 └── LICENSE
 ```
