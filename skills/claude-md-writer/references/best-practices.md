@@ -1,60 +1,60 @@
 # CLAUDE.md Best Practices
 
-Anthropic 공식 문서, Toss 테크블로그, 기타 기업 사례에서 추출한 핵심 원칙.
+Core principles distilled from Anthropic's official docs, the Toss tech blog, and other industry case studies.
 
-## Anthropic 공식 권장사항
+## Anthropic Official Recommendations
 
-### 크기와 구조
-- 파일당 **200줄 이하** — 길수록 Claude의 지시 준수율 하락
-- 마크다운 헤더와 불릿으로 그룹핑
-- 중요한 규칙에는 "IMPORTANT", "YOU MUST" 등 강조 표현
+### Size and structure
+- **Under 200 lines** per file — longer files reduce Claude's adherence to instructions
+- Group content with markdown headers and bullets
+- Use emphasis like "IMPORTANT" or "YOU MUST" for critical rules
 
-### 포함/제외 기준
+### Include / Exclude criteria
 
-| 포함 | 제외 |
+| Include | Exclude |
 |------|------|
-| Claude가 추측할 수 없는 빌드 명령어 | 코드를 읽으면 알 수 있는 것 |
-| 기본값과 다른 코드 스타일 규칙 | 표준 언어 컨벤션 |
-| 테스트 명령어와 선호 러너 | 상세 API 문서 (링크로 대체) |
-| 저장소 에티켓 (브랜치 네이밍, PR 규칙) | 자주 변하는 정보 |
-| 프로젝트 고유 아키텍처 결정 | 파일별 코드 설명 |
-| 개발 환경 quirks (필수 env vars) | "clean code를 작성하라" 같은 자명한 것 |
+| Build commands Claude cannot guess | Anything readable from the code |
+| Code style rules that differ from defaults | Standard language conventions |
+| Test commands and preferred runners | Detailed API docs (link instead) |
+| Repository etiquette (branch naming, PR rules) | Information that changes frequently |
+| Project-specific architectural decisions | Per-file code descriptions |
+| Dev environment quirks (required env vars) | Self-evident things like "write clean code" |
 
-### 핵심 질문
-> 매 줄마다: "이걸 빼면 Claude가 실수하나?" → 아니면 삭제
+### The core question
+> For every line: "If I remove this, will Claude make a mistake?" → If not, delete it.
 
-### 계층 구조
-- Managed policy (조직) → Project CLAUDE.md → User CLAUDE.md
-- `.claude/rules/` — path-scoped 조건부 규칙 (토큰 절약)
-- `.claude/skills/` — 가끔 필요한 도메인 지식 (CLAUDE.md가 아닌 skill로)
+### Hierarchy
+- Managed policy (organization) → Project CLAUDE.md → User CLAUDE.md
+- `.claude/rules/` — path-scoped conditional rules (token savings)
+- `.claude/skills/` — domain knowledge needed occasionally (use a skill, not CLAUDE.md)
 
-## Toss 테크블로그 핵심
+## Key Takeaways from the Toss Tech Blog
 
-### LLM Literacy
-- 같은 모델이라도 컨텍스트 엔지니어링 수준에 따라 결과가 극적으로 달라짐
-- 프롬프트/지시를 코드처럼 관리 (버전 관리, 코드 리뷰, 테스트)
+### LLM literacy
+- Even with the same model, results vary dramatically based on the level of context engineering
+- Manage prompts/instructions like code (version control, code review, testing)
 
-### 3-Tier 지식 아키텍처
-1. **Global** — 회사/팀 공통 표준 (~/.claude/CLAUDE.md)
-2. **Domain** — 팀/도메인별 로직 (.claude/rules/)
-3. **Local** — 저장소별 구현 (CLAUDE.md)
+### 3-tier knowledge architecture
+1. **Global** — company/team-wide standards (~/.claude/CLAUDE.md)
+2. **Domain** — team/domain logic (.claude/rules/)
+3. **Local** — per-repository implementation (CLAUDE.md)
 
-### 핵심 교훈
-- 확장 전에 표준화 — 공유 CLAUDE.md와 skills를 먼저 확립
-- Executable SSOT — 문서는 부패하지만, CLAUDE.md 지시는 실행 가능
-- 전문가 지식 분배 — 전문가 워크플로우를 공유 skills로 패키징
+### Core lessons
+- Standardize before you scale — establish shared CLAUDE.md and skills first
+- Executable SSOT — docs rot, but CLAUDE.md instructions are executable
+- Distribute expert knowledge — package expert workflows into shared skills
 
-## 실전 패턴
+## Practical Patterns
 
-### 효과적인 CLAUDE.md의 공통점
-1. **명령어 테이블** — 빌드/테스트/배포를 한눈에
-2. **아키텍처 트리** — 핵심 디렉토리와 용도만
-3. **Gotchas 섹션** — 비직관적 동작, 흔한 실수
-4. **간결한 문체** — 한 개념당 한 줄
+### What effective CLAUDE.md files have in common
+1. **Command table** — build/test/deploy at a glance
+2. **Architecture tree** — only the key directories and their purpose
+3. **Gotchas section** — counterintuitive behavior, common mistakes
+4. **Concise prose** — one line per concept
 
-### 안티패턴
-1. 코드에서 읽을 수 있는 구조를 장황하게 설명
-2. 모든 파일/함수를 나열
-3. 일반적인 코딩 원칙 반복
-4. 변경 이력이나 TODO 포함
-5. 200줄 초과
+### Antipatterns
+1. Verbosely describing structure that's readable from the code
+2. Listing every file or function
+3. Repeating generic coding principles
+4. Including changelogs or TODOs
+5. Exceeding 200 lines
