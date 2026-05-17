@@ -36,9 +36,9 @@
 | 에이전트 | 모델 | 역할 |
 |----------|------|------|
 | [external-research](agents/external-research.md) | sonnet | 외부(웹) 조사 전용. WebSearch/WebFetch로 업계 사례·공식 문서·알려진 함정을 **출처 포함** 수집 |
-| [code-implementer](agents/code-implementer.md) | sonnet | 코드 작업 전담 실행자. Plan 기반 task 단위 편집 + 스코프 테스트 + 2회 자가 치유, 경로·심볼 수준 요약만 반환 |
+| [implementer](agents/implementer.md) | sonnet | 코드 작업 전담 실행자. Plan 기반 task 단위 편집 + 스코프 테스트 + 2회 자가 치유, 경로·심볼 수준 요약만 반환 |
 
-두 에이전트 모두 `feature-*` 스킬이 위임 대상으로 호출한다. `code-implementer`는 `feature-work`의 구현, `feature-test`의 테스트 작성, `feature-review`의 자가 치유 단계에서 사용된다.
+두 에이전트 모두 `feature-*` 스킬이 위임 대상으로 호출한다. `implementer`는 `feature-work`의 구현, `feature-test`의 테스트 작성, `feature-review`의 자가 치유 단계에서 사용된다.
 
 ## 빠른 시작
 
@@ -186,7 +186,7 @@ claude-skills/
 │           └── review-checklist.md
 ├── agents/                             # 에이전트 (.claude/agents/ 대응)
 │   ├── external-research.md
-│   └── code-implementer.md
+│   └── implementer.md
 ├── docs/
 │   └── design-philosophy.md
 ├── .claude/rules/                      # path-scoped 규칙

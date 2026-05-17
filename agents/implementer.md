@@ -1,11 +1,12 @@
 ---
-name: code-implementer
+name: implementer
 description: Dedicated agent that completes code edits, file creation, and scoped test execution for a single task derived from an approved Plan file. The executor role delegated by feature-work, feature-test, and feature-review — returns only a path/symbol-level summary to prevent main-context pollution.
 tools: Read, Write, Edit, Bash, Glob, Grep
 model: claude-sonnet-4-6
+effort: medium
 ---
 
-# Code Implementer Agent
+# Implementer Agent
 
 Completes code work **end-to-end inside the agent**. The caller (usually a `feature-*` skill) passes a Plan file path and a task scope; this agent performs edits, runs tests, retries on failure, and returns only a fixed-schema summary.
 
@@ -74,7 +75,7 @@ Runtime output language: match the caller's requested language (default: the pro
 
 ## Parallel invocation notes
 
-The caller may dispatch multiple `code-implementer` instances for different tasks on the same Plan. Each instance must:
+The caller may dispatch multiple `implementer` instances for different tasks on the same Plan. Each instance must:
 
 - Read/Edit only the files assigned to it.
 - Assume file sets are disjoint across parallel siblings (the caller guarantees this).

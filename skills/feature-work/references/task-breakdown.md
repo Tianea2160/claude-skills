@@ -35,11 +35,11 @@ Task 1: Define the domain model           → completes
   └─ Both complete → proceed to Task 3, Task 5
 ```
 
-Dispatch pattern (single Agent block, multiple tool calls in one message). All instances use `subagent_type: code-implementer`:
+Dispatch pattern (single Agent block, multiple tool calls in one message). All instances use `subagent_type: implementer`:
 
 ```
-Agent(subagent_type="code-implementer", description="Task 2 — repository", ...)
-Agent(subagent_type="code-implementer", description="Task 4 — API endpoint", ...)
+Agent(subagent_type="implementer", description="Task 2 — repository", ...)
+Agent(subagent_type="implementer", description="Task 4 — API endpoint", ...)
 ```
 
 Each prompt supplies:

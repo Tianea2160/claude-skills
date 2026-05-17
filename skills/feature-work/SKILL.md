@@ -45,16 +45,16 @@ Second stage of the 4-skill feature workflow. Consumes a Plan approved by `featu
 
 Loop: pick ready tasks (no unfinished blockers), dispatch them, advance.
 
-- **Single task ready**: `TaskUpdate → in_progress`, delegate to the **`code-implementer` agent** (`subagent_type: code-implementer`) with:
+- **Single task ready**: `TaskUpdate → in_progress`, delegate to the **`implementer` agent** (`subagent_type: implementer`) with:
   - A pointer to the Plan path and the task's title/detail.
   - The specific files this task touches (from `## Change Plan`).
   - The reuse hints relevant to this task (from `## Reuse`).
   - The scoped test command for the touched paths (if available).
   - The fixed return schema (so only a summary comes back).
-- **Multiple ready tasks with disjoint file sets**: dispatch them in a single Agent block as parallel `code-implementer` instances. See `references/task-breakdown.md` for shape.
+- **Multiple ready tasks with disjoint file sets**: dispatch them in a single Agent block as parallel `implementer` instances. See `references/task-breakdown.md` for shape.
 - **File overlap detected**: serialize; do not dispatch in parallel.
 
-The `code-implementer` agent (see `agents/code-implementer.md`) loads the Plan by path, performs the edits, runs scoped tests internally with up to 2 self-heal retries, and returns only the fixed return schema.
+The `implementer` agent (see `agents/implementer.md`) loads the Plan by path, performs the edits, runs scoped tests internally with up to 2 self-heal retries, and returns only the fixed return schema.
 
 After each task's agent returns `status: ok`, call `TaskUpdate → completed`.
 

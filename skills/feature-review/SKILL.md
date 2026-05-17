@@ -48,11 +48,11 @@ Dispatch both in one Agent block. Each prompt includes: the Plan path, the chang
 ### 4. Resolve findings with self-healing
 
 For each `issues` / `blocked` return:
-1. Dispatch the **`code-implementer` agent** (`subagent_type: code-implementer`) with the finding(s), the target files, and instructions to apply the fix then re-report `status: ok`.
+1. Dispatch the **`implementer` agent** (`subagent_type: implementer`) with the finding(s), the target files, and instructions to apply the fix then re-report `status: ok`.
 2. On retry failure, the agent exhausts 2 attempts internally, then returns `status: blocked` with its reasoning.
 3. On `blocked`, surface to the user via AskUserQuestion: continue with caveat, request manual fix, or abort.
 
-Rationale: C-1 and C-2 are verification-only; actual edits go through `code-implementer` so main context never sees diff bodies.
+Rationale: C-1 and C-2 are verification-only; actual edits go through `implementer` so main context never sees diff bodies.
 
 ### 5. Delta-only second round
 
@@ -106,6 +106,6 @@ Outline rules: no complete sentences; bold nouns/identifiers/numerics/status; sy
 
 ## Constraints
 
-- Do not modify source files from main; source edits flow only through `code-implementer`. Main-thread Edits are limited to the Plan's `## Review Results` / `status.review` and CLAUDE.md-style rule files.
+- Do not modify source files from main; source edits flow only through `implementer`. Main-thread Edits are limited to the Plan's `## Review Results` / `status.review` and CLAUDE.md-style rule files.
 - Do not rewrite any other Plan section.
 - No third retry without user approval.

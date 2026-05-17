@@ -54,15 +54,15 @@ Open the Plan file and **append** the returned scenarios to the `## Test Scenari
 ### 5. Write tests (delegated, per file)
 
 For each test file to be created (grouped by target module):
-1. Dispatch the **`code-implementer` agent** (`subagent_type: code-implementer`) with: the Plan path, the scenarios for this module, the target file conventions, and the fixed return schema.
+1. Dispatch the **`implementer` agent** (`subagent_type: implementer`) with: the Plan path, the scenarios for this module, the target file conventions, and the fixed return schema.
 2. The agent writes the test file and returns only the created path plus a one-line summary.
 
-Parallelization: test files for different modules may be dispatched in one Agent block as parallel `code-implementer` instances; collate the returns before proceeding.
+Parallelization: test files for different modules may be dispatched in one Agent block as parallel `implementer` instances; collate the returns before proceeding.
 
 ### 6. Run tests and self-heal
 
 1. Run the full test command once.
-2. For each failing test: dispatch **`code-implementer`** with the failure output and ask it to **fix either the test or the implementation** and re-report. The agent retries up to 2 times internally, then surfaces `status: blocked`.
+2. For each failing test: dispatch **`implementer`** with the failure output and ask it to **fix either the test or the implementation** and re-report. The agent retries up to 2 times internally, then surfaces `status: blocked`.
 3. On `blocked` status, stop self-healing and ask the user via AskUserQuestion how to proceed.
 
 ### 7. Update Plan status
